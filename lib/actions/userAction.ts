@@ -5,7 +5,7 @@ interface User {
     name: string;
     email: string;
     picture: string;
-    username?: string | null;
+    username: string;
     password?: string;
 }
 

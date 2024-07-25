@@ -72,7 +72,7 @@ export async function POST(req: Request) {
                 name: `${first_name || ''} ${last_name || ''}`.trim(),
                 email: email_addresses[0]?.email_address,
                 picture: image_url,
-                username: username,
+                username: username ?? '',
             });
 
             if (res) {
