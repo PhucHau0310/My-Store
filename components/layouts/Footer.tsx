@@ -6,9 +6,9 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import XIcon from '@mui/icons-material/X';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import CopyrightIcon from '@mui/icons-material/Copyright';
-import paypal from '../../public/paypal.svg';
-import visa from '../../public/visa.svg';
-import card from '../../public/card.svg';
+import paypal from '../../public/svg/paypal.svg';
+import visa from '../../public/svg/visa.svg';
+import card from '../../public/svg/card.svg';
 import Image from 'next/image';
 
 const Footer = () => {
@@ -25,7 +25,10 @@ const Footer = () => {
                             {Array(5)
                                 .fill(null)
                                 .map((_, idx) => (
-                                    <div className="text-white bg-[#00B67A] p-2">
+                                    <div
+                                        key={idx}
+                                        className="text-white bg-[#00B67A] p-2"
+                                    >
                                         <StarIcon />
                                     </div>
                                 ))}
@@ -108,7 +111,7 @@ const Footer = () => {
 
                     <div className="flex flex-row items-center gap-2">
                         {[paypal, visa, card].map((item, idx) => (
-                            <div>
+                            <div key={idx}>
                                 <Image
                                     src={item}
                                     alt={item}

@@ -6,7 +6,9 @@ interface User {
     email: string;
     picture: string;
     username: string;
+    mobile?: string;
     password?: string;
+    createdAt: number;
 }
 
 export const createOrUpdateUser = async (dataUser: User) => {

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import people from '../../public/people.png';
+import people from '../../../public/img/people.png';
 
 const Categories = () => {
     return (
@@ -17,16 +17,18 @@ const Categories = () => {
                                 key={idx}
                                 className="flex flex-col items-center"
                             >
-                                <div className="bg-[#F1DEB4] p-4 rounded-lg mb-3">
+                                <div className="bg-[#F1DEB4] p-4 rounded-lg mb-3 cursor-pointer">
                                     <Image
                                         src={people}
                                         alt="image"
                                         width={200}
                                         height={200}
-                                        className="w-full h-auto object-cover"
+                                        className="w-full h-auto object-cover hover:scale-105 transform transition-transform duration-300"
                                     />
                                 </div>
-                                <h2 className="text-lg font-medium">Fashion</h2>
+                                <h2 className="text-lg font-medium cursor-pointer">
+                                    Fashion
+                                </h2>
                             </div>
                         ))}
                 </div>

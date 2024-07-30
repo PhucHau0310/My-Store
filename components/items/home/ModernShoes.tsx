@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import modernShoes from '../../public/modern-shoes.png';
-import starBlack from '../../public/star-black.svg';
-import rectangle from '../../public/rectangle.png';
+import modernShoes from '../../../public/img/modern-shoes.png';
+import starBlack from '../../../public/svg/star-black.svg';
+import rectangle from '../../../public/img/rectangle.png';
 
 const ModernShoes = () => {
     return (

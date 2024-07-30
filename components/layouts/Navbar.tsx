@@ -13,6 +13,7 @@ import { ListNavigate } from '@/constants';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import useClickOutside from '@/hooks/useCickOutside';
 import { useRouter } from 'next/navigation';
+import Cart from '../form/Cart';
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -27,13 +28,23 @@ const Navbar = () => {
     const [valueSearch, setValueSearch] = React.useState<string | null>(null);
     const [idTitleClick, setIdTitleClick] = React.useState(-1);
     const { ref, isVisible, setIsVisible } = useClickOutside(false);
+    const [clickCart, setClickCart] = React.useState(false);
 
     const router = useRouter();
 
+    const handleString = (link: string) => {
+        return link.toLocaleLowerCase().split(' ').join('-');
+    };
+
     return (
-        <div className="bg-[#005D63] pb-5 sticky top-0 z-10">
+        <div className="bg-[#005D63] pb-3 sticky top-0 z-20">
+            {clickCart && <Cart setClickCart={setClickCart} />}
+
             <div className="max-w-screen-xl py-3 mx-auto flex flex-row items-center justify-between">
-                <h1 className="text-white w-44 font-semibold text-2xl cursor-pointer hover:scale-105 transition-all">
+                <h1
+                    onClick={() => router.push('/')}
+                    className="text-white w-44 font-semibold text-2xl cursor-pointer hover:scale-105 transition-all"
+                >
                     My<span className="text-red-300">Store</span>
                 </h1>
 
@@ -51,12 +62,10 @@ const Navbar = () => {
                 </div>
 
                 <div className="flex flex-row items-center gap-8">
-                    <div
-                        onClick={() => setIsVisible(true)}
-                        className="text-white cursor-pointer relative"
-                    >
+                    <div className="text-white cursor-pointer relative">
                         <SignedOut>
                             <AccountCircleOutlinedIcon
+                                onClick={() => setIsVisible(true)}
                                 sx={{ width: '30px', height: '30px' }}
                             />
                         </SignedOut>
@@ -85,7 +94,7 @@ const Navbar = () => {
                             </div>
                         )}
                     </div>
-                    <div>
+                    <div onClick={() => router.push('/wishlist')}>
                         <IconButton aria-label="cart">
                             <StyledBadge badgeContent={4} color="secondary">
                                 <FavoriteBorderOutlinedIcon
@@ -98,7 +107,7 @@ const Navbar = () => {
                             </StyledBadge>
                         </IconButton>
                     </div>
-                    <div>
+                    <div onClick={() => setClickCart(true)}>
                         <IconButton aria-label="cart">
                             <StyledBadge badgeContent={4} color="secondary">
                                 <ShoppingBagOutlinedIcon
@@ -114,10 +123,21 @@ const Navbar = () => {
                 </div>
             </div>
 
-            <div className="w-[60%] mt-2 mx-auto text-white">
+            <div className="w-[60%] mt-0.5 mx-auto text-white">
                 <ul className="flex flex-row items-center justify-between">
                     {ListNavigate.map((item) => (
                         <li
+                            onClick={() => {
+                                if (!item.nestedTitle) {
+                                    router.push(
+                                        `/${item.title.toLocaleLowerCase()}`
+                                    );
+                                }
+
+                                if (item.title === 'Home') {
+                                    router.push('/');
+                                }
+                            }}
                             key={item.id}
                             onMouseEnter={() => setIdTitleClick(item.id)}
                             onMouseLeave={() => setIdTitleClick(-1)}
@@ -131,16 +151,25 @@ const Navbar = () => {
                             )}
 
                             {idTitleClick === item.id && item.nestedTitle && (
-                                <div className="absolute top-5 left-1/2 -translate-x-1/2 pt-8 w-48">
+                                <div className="absolute top-3.5 left-1/2 -translate-x-1/2 pt-8 w-48">
                                     <ul className="bg-[#005D63] shadow-lg">
-                                        {item.nestedTitle.map((itemNested) => (
-                                            <li
-                                                key={itemNested.id}
-                                                className="border-y border-y-[#1E787D] px-5 py-3 hover:text-[#FFD44D] transition-all duration-300 ease-in-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
-                                            >
-                                                {itemNested.title}
-                                            </li>
-                                        ))}
+                                        {item.nestedTitle.map(
+                                            (itemNested: any) => (
+                                                <li
+                                                    onClick={() =>
+                                                        router.push(
+                                                            handleString(
+                                                                itemNested.title
+                                                            )
+                                                        )
+                                                    }
+                                                    key={itemNested.id}
+                                                    className="border-y border-y-[#1E787D] px-5 py-3 hover:text-[#FFD44D] transition-all duration-300 ease-in-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                                                >
+                                                    {itemNested.title}
+                                                </li>
+                                            )
+                                        )}
                                     </ul>
                                 </div>
                             )}

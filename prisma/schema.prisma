@@ -64,6 +64,7 @@ model User {
   reviews         Review[]
   cart            Cart?
   supportRequests SupportRequest[]
+  createdAt       Float
 }
 
 model Product {
