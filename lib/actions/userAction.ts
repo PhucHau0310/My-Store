@@ -8,7 +8,6 @@ interface User {
     username: string;
     mobile?: string;
     password?: string;
-    createdAt?: number;
 }
 
 export const createOrUpdateUser = async (dataUser: User) => {
