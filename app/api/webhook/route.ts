@@ -64,8 +64,6 @@ export async function POST(req: Request) {
             email_addresses,
             image_url,
             username,
-            phone_numbers,
-            created_at,
         } = evt.data;
 
         try {
@@ -75,8 +73,6 @@ export async function POST(req: Request) {
                 email: email_addresses[0]?.email_address,
                 picture: image_url,
                 username: username ?? '',
-                mobile: phone_numbers[0].phone_number ?? '',
-                createdAt: created_at,
             });
 
             if (res) {
