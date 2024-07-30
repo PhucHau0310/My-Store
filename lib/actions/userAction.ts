@@ -25,9 +25,16 @@ export const createOrUpdateUser = async (dataUser: User) => {
             });
 
             return newUser;
-        }
+        } else {
+            const updateUser = await prisma.user.update({
+                where: {
+                    id: dataUser.id,
+                },
+                data: dataUser,
+            });
 
-        return;
+            return updateUser;
+        }
     } catch (error) {
         console.log(error);
         return error;
