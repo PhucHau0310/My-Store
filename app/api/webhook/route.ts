@@ -95,12 +95,17 @@ export async function POST(req: Request) {
         try {
             const res = await deleteUser(id ?? '');
 
-            if (res) {
+            if (res === null) {
                 return new Response(
-                    JSON.stringify({ message: 'User is deleted' }),
-                    { status: 200 }
+                    JSON.stringify({ message: 'User not found' }),
+                    { status: 404 }
                 );
             }
+
+            return new Response(
+                JSON.stringify({ message: 'User is deleted' }),
+                { status: 200 }
+            );
         } catch (error) {
             console.error('Error deleting user:', error);
             return new Response('Error occurred', {

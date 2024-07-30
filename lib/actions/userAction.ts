@@ -42,6 +42,17 @@ export const createOrUpdateUser = async (dataUser: User) => {
 
 export const deleteUser = async (idUser: string) => {
     try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: idUser,
+            },
+        });
+
+        if (!user) {
+            console.log(`User with ID ${idUser} not found`);
+            return null; // hoặc trả về một thông báo phù hợp
+        }
+
         const userDeleted = await prisma.user.delete({
             where: {
                 id: idUser,
