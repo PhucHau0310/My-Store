@@ -1,82 +1,97 @@
-import { Product } from '@/interface';
-import ItemCart from '../../cards/ItemCart';
+'use client';
 
-const fakeData = [
-    {
-        id: '1',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '1',
-        category: {
-            id: '1.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '2',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '2',
-        category: {
-            id: '2.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '3',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '3',
-        category: {
-            id: '3.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '4',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '4',
-        category: {
-            id: '4.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-];
+import { Order, Product } from '@/interface';
+import ItemCart from '../../cards/ItemCart';
+import React from 'react';
+import useProducts from '@/hooks/useProducts';
+import Link from 'next/link';
+import { CircularProgress } from '@mui/material';
 
 const PopularProducts = () => {
+    const [orders, setOrders] = React.useState<Order[]>([]);
+    const [topSellingProducts, setTopSellingProducts] = React.useState<
+        Product[]
+    >([]);
+    const { products } = useProducts();
+    const [isLoading, setLoading] = React.useState(false);
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+    React.useEffect(() => {
+        const container = containerRef.current;
+        let scrollPosition = 0;
+        let scrollInterval: any;
+
+        const startScrolling = () => {
+            scrollInterval = setInterval(() => {
+                if (container) {
+                    if (
+                        scrollPosition + container.clientWidth >=
+                        container.scrollWidth
+                    ) {
+                        scrollPosition = 0;
+                    } else {
+                        // scrollPosition += container.clientWidth;
+                        scrollPosition += 250;
+                    }
+                    container.scrollTo({
+                        left: scrollPosition,
+                        behavior: 'smooth',
+                    });
+                }
+            }, 2500);
+        };
+
+        startScrolling();
+
+        // Cleanup function
+        return () => clearInterval(scrollInterval);
+    }, []);
+
+    React.useEffect(() => {
+        const orders = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`/api/order`);
+                const data = await res.json();
+
+                if (res.ok) {
+                    setOrders(data);
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        orders();
+    }, []);
+
+    React.useEffect(() => {
+        if (orders.length > 0) {
+            const productSales: { [key: string]: number } = {};
+
+            orders.forEach((order) => {
+                order.orderItems.forEach((item) => {
+                    if (!productSales[item.productId]) {
+                        productSales[item.productId] = item.quantity;
+                    } else {
+                        productSales[item.productId] += item.quantity;
+                    }
+                });
+            });
+
+            const topSellingProductIds = Object.entries(productSales)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([productId]) => productId);
+
+            const topProducts = products.filter((product) =>
+                topSellingProductIds.includes(product.id)
+            );
+            setTopSellingProducts(topProducts);
+        }
+    }, [orders, products]);
     return (
         <div className="bg-white py-14">
             <div className="max-w-screen-xl mx-auto">
@@ -90,15 +105,25 @@ const PopularProducts = () => {
                         beautiful and glorious.
                     </h2>
 
-                    <button className="w-36 border border-[#005D63] text-[#005D63] px-4 py-3 hover:text-white hover:bg-[#005D63] transform transition-colors duration-300">
+                    <Link
+                        href={'/product-fashion'}
+                        className="w-36 border text-center border-[#005D63] text-[#005D63] px-4 py-3 hover:text-white hover:bg-[#005D63] transform transition-colors duration-300"
+                    >
                         Browse All
-                    </button>
+                    </Link>
                 </div>
 
-                <div className="flex flex-row items-center gap-10 overflow-y-auto scrollY">
-                    {fakeData.map((product, idx) => (
-                        <ItemCart key={idx} dataProduct={product} />
-                    ))}
+                <div
+                    ref={containerRef}
+                    className="transform transition-transform duration-500 flex flex-row items-center gap-10 overflow-y-auto scrollY"
+                >
+                    {isLoading ? (
+                        <CircularProgress />
+                    ) : (
+                        topSellingProducts.map((product, idx) => (
+                            <ItemCart key={idx} dataProduct={product} />
+                        ))
+                    )}
                 </div>
             </div>
         </div>

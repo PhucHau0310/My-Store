@@ -6,7 +6,6 @@ import {
     GridActionsCellItem,
     GridColDef,
     GridRowModes,
-    GridRowModesModel,
     GridToolbar,
 } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
@@ -14,9 +13,13 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import Image from 'next/image';
-import girl1 from '../../../../public/img/girl-1.png';
 import React from 'react';
 import { User } from '@/interface';
+import { useDataGridManager } from '@/hooks/useDataGridManager';
+
+interface UserExtend extends User {
+    isNew?: boolean;
+}
 
 const Users = () => {
     const { users } = useAllUsers();
@@ -24,6 +27,23 @@ const Users = () => {
     React.useEffect(() => {
         setRows(users);
     }, [users]);
+
+    const convertTimeUs = (dateString: string) => {
+        const date = new Date(dateString);
+
+        const options: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        };
+
+        const formattedDate = date.toLocaleString('en-US', options);
+
+        return formattedDate;
+    };
 
     const columns: GridColDef[] = [
         { field: 'id', headerName: 'User ID', width: 200 },
@@ -33,7 +53,6 @@ const Users = () => {
             width: 100,
             description: 'This column is not sortable.',
             sortable: false,
-            editable: false,
             renderCell(params) {
                 return (
                     <div className="h-full relative">
@@ -53,44 +72,41 @@ const Users = () => {
             field: 'name',
             headerName: 'Name',
             width: 130,
-            description: 'This column is not sortable.',
-            sortable: false,
+            editable: true,
         },
         {
             field: 'username',
             headerName: 'Username',
             width: 130,
-            description: 'This column is not sortable.',
-            sortable: false,
+            editable: true,
         },
         {
             field: 'email',
             headerName: 'Email',
             width: 180,
+            editable: true,
         },
         {
             field: 'mobile',
             headerName: 'Contact',
             width: 110,
-        },
-        {
-            field: 'createdAt',
-            headerName: 'Joining Date',
-            width: 110,
-        },
-        {
-            field: 'stock',
-            headerName: 'Stock',
-            width: 110,
-            type: 'number',
             description: 'This column is not sortable.',
             sortable: false,
             editable: true,
         },
         {
-            field: 'version',
-            headerName: 'Version',
-            width: 120,
+            field: 'createdAt',
+            headerName: 'Joining Date',
+            editable: false,
+            width: 180,
+            renderCell(params) {
+                return <p>{convertTimeUs(params.row.createdAt)}</p>;
+            },
+        },
+        {
+            field: 'role',
+            headerName: 'Role',
+            width: 110,
             editable: true,
         },
         {
@@ -108,13 +124,13 @@ const Users = () => {
                         <GridActionsCellItem
                             icon={<SaveIcon />}
                             label="Save"
-                            // onClick={handleSaveClick(id)}
+                            onClick={handleSaveClick(id)}
                         />,
                         <GridActionsCellItem
                             icon={<CancelIcon />}
                             label="Cancel"
                             className="textPrimary"
-                            // onClick={handleCancelClick(id)}
+                            onClick={handleCancelClick(id)}
                             color="inherit"
                         />,
                     ];
@@ -125,13 +141,13 @@ const Users = () => {
                         icon={<EditIcon />}
                         label="Edit"
                         className="textPrimary"
-                        // onClick={handleEditClick(id)}
+                        onClick={handleEditClick(id)}
                         color="inherit"
                     />,
                     <GridActionsCellItem
                         icon={<DeleteIcon />}
                         label="Delete"
-                        // onClick={handleDeleteClick(id)}
+                        onClick={handleDeleteClick(id)}
                         color="inherit"
                     />,
                 ];
@@ -139,12 +155,25 @@ const Users = () => {
         },
     ];
 
-    const [rows, setRows] = React.useState<User[]>([]);
-    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
-        {}
-    );
+    const {
+        rows,
+        setRows,
+        rowModesModel,
+        setRowModesModel,
+        sureDelete,
+        idToDelete,
+        handleRowEditStop,
+        handleEditClick,
+        handleSaveClick,
+        handleDeleteClick,
+        handleDeleteConfirm,
+        handleCancelClick,
+        processRowUpdate,
+        handleRowModesModelChange,
+        setSureDelete,
+        setIdToDelete,
+    } = useDataGridManager<UserExtend>(users, '/api/user');
 
-    console.log({ rows });
     return (
         <div className="py-5 pb-10 ">
             <div className="flex flex-row justify-between items-center">
@@ -158,6 +187,32 @@ const Users = () => {
                 </div>
             </div>
 
+            {sureDelete && (
+                <div className="fixed z-30 w-[400px] top-10 left-1/2 -translate-x-1/2 bg-white shadow-lg shadow-black p-4 rounded-lg">
+                    <p className="font-semibold text-red-400 text-center">
+                        Are you sure delete user have ID: {idToDelete} ?
+                    </p>
+
+                    <div className="flex flex-row items-center gap-8 text-white mt-5">
+                        <button
+                            onClick={() => {
+                                setIdToDelete(null);
+                                setSureDelete(false);
+                            }}
+                            className="w-1/2 bg-blue-400 p-1 rounded-lg"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => handleDeleteConfirm}
+                            className="w-1/2 bg-red-600 p-1 rounded-lg"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div
                 style={{ height: 450, width: '100%' }}
                 className="rounded-2xl mt-7"
@@ -168,9 +223,9 @@ const Users = () => {
                     editMode="row"
                     rowModesModel={rowModesModel}
                     checkboxSelection
-                    // onRowModesModelChange={handleRowModesModelChange}
-                    // onRowEditStop={handleRowEditStop}
-                    // processRowUpdate={processRowUpdate}
+                    onRowModesModelChange={handleRowModesModelChange}
+                    onRowEditStop={handleRowEditStop}
+                    processRowUpdate={processRowUpdate}
                     slots={{ toolbar: GridToolbar }}
                     slotProps={{
                         toolbar: { setRows, setRowModesModel },

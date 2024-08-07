@@ -1,119 +1,30 @@
+'use client';
+
 import ItemCart2 from '@/components/cards/ItemCart2';
+import useProducts from '@/hooks/useProducts';
+import { Product } from '@/interface';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
-
-const fakeData = [
-    {
-        id: '1',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '1',
-        category: {
-            id: '1.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '2',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '2',
-        category: {
-            id: '2.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '3',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '3',
-        category: {
-            id: '3.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '4',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '4',
-        category: {
-            id: '4.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '5',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '4',
-        category: {
-            id: '4.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-    {
-        id: '6',
-        name: 'Mid Century Modern T-Shirt',
-        picture: '',
-        version: '1.0',
-        description: 'nice good awesome',
-        price: 110,
-        quantity: 20,
-        published: true,
-        categoryId: '4',
-        category: {
-            id: '4.1',
-            name: 'Men-Cloths',
-            description: '',
-            image: '',
-            published: true,
-        },
-    },
-];
+import React from 'react';
 
 const BestCollection = () => {
+    const { products, isLoading } = useProducts();
+    const [filteredProducts, setFilteredProducts] = React.useState<Product[]>(
+        []
+    );
+
+    React.useEffect(() => {
+        const filtered = products.filter(
+            (item: Product) =>
+                item.category.name === 'Mobile Device' ||
+                item.category.name === 'Computer Device' ||
+                item.category.name === 'Smart Watch'
+        );
+
+        const shuffledProduct = filtered.sort(() => 0.5 - Math.random());
+        setFilteredProducts(shuffledProduct.slice(0, 6));
+    }, [products]);
+
     return (
         <div className="bg-white mt-20 pt-32 pb-28">
             <div className="max-w-screen-xl mx-auto">
@@ -134,7 +45,7 @@ const BestCollection = () => {
                 </div>
 
                 <div className="grid grid-cols-3 gap-10 mt-8">
-                    {fakeData.map((product, idx) => (
+                    {filteredProducts.map((product, idx) => (
                         <ItemCart2 key={idx} dataProduct={product} />
                     ))}
                 </div>

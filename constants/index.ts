@@ -21,6 +21,7 @@ import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import GppBadIcon from '@mui/icons-material/GppBad';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
 
 export const ListNavigate = [
     {
@@ -291,8 +292,8 @@ export const ListNavigateDashboard = [
             },
             {
                 id: 1.6,
-                title: 'Analytics',
-                icon: AnalyticsIcon,
+                title: 'Warehouse',
+                icon: WarehouseIcon,
             },
             {
                 id: 1.7,
@@ -334,12 +335,12 @@ export const BenefitHeaders = [
     },
     {
         id: 3,
-        title: 'Total Products',
+        title: 'Canceled Order',
         icon: GppBadIcon,
     },
     {
         id: 4,
-        title: 'Total Products',
+        title: 'Top Products',
         icon: VerifiedIcon,
     },
 ];

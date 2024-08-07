@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import modernShoes from '../../../public/img/modern-shoes.png';
 import clock from '../../../public/img/clock.png';
 import { Features2 } from '@/constants';
+import Link from 'next/link';
 
 const ElectronicsProducts = () => {
     return (
@@ -17,9 +17,12 @@ const ElectronicsProducts = () => {
                         holds promised. could make the tagline.
                     </h2>
 
-                    <button className="bg-[#005D63] rounded-lg w-[30%] p-4 text-white hover:opacity-95">
+                    <Link
+                        href={'/product-electronics'}
+                        className="bg-[#005D63] text-center rounded-lg w-[30%] p-4 text-white hover:opacity-95"
+                    >
                         Explore Product
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="w-1/2 relative">

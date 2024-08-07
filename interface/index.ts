@@ -1,4 +1,4 @@
-interface Category {
+export interface Category {
     id: string;
     name: string;
     description?: string;
@@ -17,6 +17,7 @@ export interface Product {
     published: boolean;
     categoryId: string;
     category: Category;
+    Review: Review[];
 }
 
 export interface User {
@@ -41,4 +42,47 @@ export interface Review {
     reviewDate: string;
     user: User;
     createdAt: string;
+}
+export interface Warehouse {
+    id: string;
+    name: string;
+    location: string;
+}
+
+export interface Order {
+    id: string;
+    userId: string;
+    orderDate: string;
+    totalAmount: number;
+    shippingAddress: string;
+    status: string;
+    user: User;
+    orderItems: {
+        id: string;
+        productId: string;
+        quantity: number;
+        price: number;
+        product: {
+            name: string;
+        };
+    }[];
+    payment: {
+        id: string;
+        paymentDate: string;
+        amount: string;
+        paymentMethod: string;
+        status: string;
+    };
+}
+
+export interface Post {
+    id: string;
+    title: string;
+    content: string;
+    picture: string;
+    published: boolean;
+    authorId: string;
+    author: User;
+    createdAt: string;
+    updatedAt: string;
 }

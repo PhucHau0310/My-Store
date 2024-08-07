@@ -44,7 +44,7 @@ const LastTransaction = () => {
     };
 
     return (
-        <div className="mt-10 w-2/3 bg-white border border-[#f1f1f1] rounded-xl py-4 px-14  overflow-x-scroll">
+        <div className="mt-10 w-full bg-white border border-[#f1f1f1] rounded-xl py-4 px-14  overflow-x-scroll">
             <h1 className="text-lg font-semibold mb-4">Last Transaction</h1>
 
             <TableContainer component={Paper} className="scrollY pb-2">

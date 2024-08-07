@@ -35,7 +35,7 @@ const AlertNotification = ({
         return () => clearInterval(interval);
     }, [status, dispatch]);
     return (
-        <div className="fixed z-50 left-0 right-0 w-[300px] mt-2 bg-white mx-auto">
+        <div className="fixed z-50 left-0 right-0 w-[300px] mt-2 bg-white mx-auto font-semibold text-lg">
             <Alert
                 variant="outlined"
                 severity={status === 200 ? 'success' : 'error'}

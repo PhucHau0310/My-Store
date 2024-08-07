@@ -9,6 +9,8 @@ import { imageDb } from '@/lib/firebase';
 import Image from 'next/image';
 import { useDispatch } from 'react-redux';
 import { resStatus } from '@/lib/redux/slices/statusSlice';
+import useCategories from '@/hooks/useCategories';
+import { CircularProgress } from '@mui/material';
 
 const AddProduct = ({
     openAddProduct,
@@ -17,7 +19,12 @@ const AddProduct = ({
     openAddProduct: boolean;
     setOpenAddProduct: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-    const [categoryName, setCategoryName] = React.useState<string | null>(null);
+    const dispatch = useDispatch();
+    const { categories } = useCategories();
+
+    const [categoryID, setCategoryID] = React.useState<string | null>(
+        categories[0]?.id
+    );
     const [version, setVersion] = React.useState<string | null>(null);
     const [name, setName] = React.useState<string | null>(null);
     const [desc, setDesc] = React.useState<string | null>(null);
@@ -26,8 +33,7 @@ const AddProduct = ({
     const [renderImg, setRenderImg] = React.useState<string | null>(null);
     const [file, setFile] = React.useState<File | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-
-    const dispatch = useDispatch();
+    const [isLoading, setLoading] = React.useState(false);
 
     const handleUploadFile = (e: any) => {
         const selectedFile = e.target.files?.[0];
@@ -38,18 +44,79 @@ const AddProduct = ({
     };
 
     const handleSubmit = async () => {
-        // if (!file) return;
+        if (
+            !file ||
+            !name ||
+            !categoryID ||
+            !version ||
+            !quantity ||
+            !price ||
+            !desc
+        ) {
+            dispatch(
+                resStatus({
+                    status: 500,
+                    message: 'Please filled all information below, hihi',
+                })
+            );
+            return;
+        }
+
+        setLoading(true);
 
         try {
             // Upload file to Firebase Storage
-            // const imgRef = ref(imageDb, `files/${v4()}`);
-            // const snapshot = await uploadBytes(imgRef, file);
-            // const downloadURL = await getDownloadURL(snapshot.ref);
+            const imgRef = ref(imageDb, `files/${v4()}`);
+            const snapshot = await uploadBytes(imgRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+
+            const dataPayload = {
+                name: name,
+                description: desc,
+                picture: downloadURL,
+                categoryId: categoryID,
+                version: version,
+                quantity: quantity,
+                price: price,
+            };
+
+            const res = await fetch(`/api/product/new`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataPayload),
+            });
+
+            if (res.ok) {
+                setName(null);
+                setDesc(null);
+                setFile(null);
+                setRenderImg(null);
+                setCategoryID(null);
+                setVersion(null);
+                setQuantity(null);
+                setPrice(null);
+            }
+
+            const { message } = await res.json();
+
             dispatch(
-                resStatus({ status: 200, message: 'Add Product Success' })
+                resStatus({
+                    status: res.status,
+                    message: message,
+                })
             );
         } catch (error) {
             console.log(error);
+            dispatch(
+                resStatus({
+                    status: 500,
+                    message: 'Failed to create product',
+                })
+            );
+        } finally {
+            setLoading(false);
         }
     };
     return (
@@ -147,17 +214,17 @@ const AddProduct = ({
                                 Category
                             </label>
                             <select
-                                onChange={(e) =>
-                                    setCategoryName(e.target.value)
-                                }
+                                value={categoryID ?? ''}
+                                onChange={(e) => setCategoryID(e.target.value)}
                                 id="category"
                                 name="category"
                                 className="bg-white border border-[#80888b] w-1/3 rounded-lg outline-blue-400 p-4 "
                             >
-                                <option value="volvo">Volvo</option>
-                                <option value="saab">Saab</option>
-                                <option value="fiat">Fiat</option>
-                                <option value="audi">Audi</option>
+                                {categories.map((cate, idx) => (
+                                    <option value={cate.id} key={idx}>
+                                        {cate.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="flex flex-row items-center w-[80%] gap-8">
@@ -235,7 +302,11 @@ const AddProduct = ({
                     onClick={handleSubmit}
                     className="fixed bottom-8 right-7 text-white bg-blue-500 rounded-lg p-3 shadow-lg hover:scale-105 transform transition-transform duration-300"
                 >
-                    Add Product
+                    {isLoading ? (
+                        <CircularProgress sx={{ color: 'white' }} />
+                    ) : (
+                        <p>Add Product</p>
+                    )}
                 </button>
             </div>
         </div>

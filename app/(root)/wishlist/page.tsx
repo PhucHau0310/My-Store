@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,26 +10,28 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import CloseIcon from '@mui/icons-material/Close';
 import Image from 'next/image';
+import { useDispatch, useSelector } from 'react-redux';
+import { Product } from '@/interface';
+import { removeFromWishlist } from '@/lib/redux/slices/wishlistSlice';
+import { addToCart } from '@/lib/redux/slices/cartSlice';
+import { resStatus } from '@/lib/redux/slices/statusSlice';
 
-import girl1 from '../../../public/img/girl-1.png';
-
-function createData(
-    name: string,
-    price: number,
-    quantity: number,
-    stockStatus: string
-) {
-    return { name, price, quantity, stockStatus };
-}
-
-const rows = [
-    createData('Frozen yoghurt', 159, 1, 'In Stock'),
-    createData('Ice cream sandwich', 237, 2, 'In Stock'),
-    createData('Eclair', 262, 3, 'In Stock'),
-    createData('Cupcake', 305, 4, 'In Stock'),
-    createData('Gingerbread', 356, 5, 'In Stock'),
-];
 const WishList = () => {
+    const dispatch = useDispatch();
+    const { items } = useSelector(
+        (state: { wishlist: { items: Product[] } }) => state.wishlist
+    );
+
+    const handleRemoveWishlist = (id: string) => {
+        dispatch(removeFromWishlist(id));
+    };
+
+    const handleAddToCart = (data: Product) => {
+        dispatch(addToCart({ ...data, quantityBuy: 1 }));
+        dispatch(removeFromWishlist(data.id));
+
+        dispatch(resStatus({ status: 200, message: 'Add To Cart Success' }));
+    };
     return (
         <div className="bg-white mt-20 pb-28">
             <div className="max-w-screen-lg mx-auto">
@@ -35,7 +39,7 @@ const WishList = () => {
                     Wish List
                 </h1>
                 <p className="text-[#566363] font-normal text-base text-center mb-12">
-                    3 items in your wishlist
+                    {items.length} items in your wishlist
                 </p>
 
                 <TableContainer component={Paper}>
@@ -54,7 +58,7 @@ const WishList = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row) => (
+                            {items.map((row) => (
                                 <TableRow
                                     key={row.name}
                                     sx={{
@@ -73,15 +77,20 @@ const WishList = () => {
                                             gap: '8px',
                                         }}
                                     >
-                                        <button className="text-[#566363]">
+                                        <button
+                                            onClick={() =>
+                                                handleRemoveWishlist(row.id)
+                                            }
+                                            className="text-[#566363]"
+                                        >
                                             <CloseIcon />
                                         </button>
                                         <Image
-                                            src={girl1}
+                                            src={row.picture}
                                             alt="image"
                                             width={80}
                                             height={80}
-                                            className=""
+                                            className="object-cover w-20 h-20"
                                         />
                                         {row.name}
                                     </TableCell>
@@ -89,13 +98,16 @@ const WishList = () => {
                                         {row.price}
                                     </TableCell>
                                     <TableCell align="right">
-                                        {row.stockStatus}
+                                        {/* {row.stockStatus} */}
                                     </TableCell>
                                     <TableCell align="right">
                                         {row.quantity}
                                     </TableCell>
                                     <TableCell align="right">
-                                        <button className="text-white bg-[#005D63] px-4 py-2 rounded-lg">
+                                        <button
+                                            onClick={() => handleAddToCart(row)}
+                                            className="text-white bg-[#005D63] px-4 py-2 rounded-lg"
+                                        >
                                             Add To Cart
                                         </button>
                                     </TableCell>

@@ -1,19 +1,33 @@
-'use client';
-
 import { Review } from '@/interface';
-import { useUser } from '@clerk/nextjs';
 import StarIcon from '@mui/icons-material/Star';
+import { Rating } from '@mui/material';
 import Image from 'next/image';
 
 const ItemTestimonial = ({ dataReview }: { dataReview: Review | null }) => {
-    const user = useUser();
+    const convertTimeUs = (dateString: string) => {
+        const date = new Date(dateString);
+
+        const options: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        };
+
+        const formattedDate = date.toLocaleString('en-US', options);
+
+        return formattedDate;
+    };
+
     return (
         <div className="shadow-xl px-4 py-10 w-full">
             <div className="flex flex-row items-center justify-between">
                 <div className="flex flex-row items-center gap-3">
                     <div className="w-10 h-10">
                         <Image
-                            src={user.user?.imageUrl ?? ''}
+                            src={dataReview?.user.picture ?? ''}
                             alt="image"
                             width={60}
                             height={60}
@@ -23,27 +37,28 @@ const ItemTestimonial = ({ dataReview }: { dataReview: Review | null }) => {
 
                     <div className="flex flex-col">
                         <h1 className="text-[#131717] font-medium text-base">
-                            {dataReview?.user.username ?? 'Nguyen Phuc Hau'}
+                            {dataReview?.user.username}
                         </h1>
                         <p className="text-[#889595] font-normal text-sm">
-                            {dataReview?.createdAt ?? 'June 12, 2022'}
+                            {convertTimeUs(dataReview?.reviewDate ?? '')}
                         </p>
                     </div>
                 </div>
 
                 <div className="w-32">
-                    {Array(5)
-                        .fill(null)
-                        .map((_, idx) => (
-                            <StarIcon sx={{ color: 'yellow' }} />
-                        ))}
+                    <Rating
+                        name="read-only"
+                        value={dataReview?.rating || 0}
+                        readOnly
+                        precision={0.5}
+                        sx={{
+                            color: '#FFD44D',
+                        }}
+                    />
                 </div>
             </div>
             <p className="text-[#000000] text-base mt-6">
-                I will say this will be a game-changer for designers. They have
-                a very interesting idea of sorting resources (templates and
-                blocks) with a huge collection of resources. This will make the
-                design work faster.
+                {dataReview?.comment}
             </p>
         </div>
     );

@@ -3,6 +3,7 @@
 import AlertNotification from '@/components/layouts/AlertNotification';
 import Header from '@/components/layouts/Header';
 import LeftSideBar from '@/components/layouts/LeftSideBar';
+import NextTopLoader from 'nextjs-toploader';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -15,6 +16,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <div className="w-full flex flex-row">
+            <div className="z-50">
+                <NextTopLoader />
+            </div>
             {status && <AlertNotification status={status} message={message} />}
             <LeftSideBar />
             <Header />

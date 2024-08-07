@@ -64,8 +64,21 @@ model User {
   reviews         Review[]
   cart            Cart?
   supportRequests SupportRequest[]
+  posts           Post[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+}
+
+model Post {
+  id         String           @id @default(cuid())
+  title      String
+  content    String
+  picture    String
+  published  Boolean   @default(true)
+  authorId   String
+  author     User      @relation(fields: [authorId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Product {

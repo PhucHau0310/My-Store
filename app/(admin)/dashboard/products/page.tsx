@@ -5,55 +5,71 @@ import {
     DataGrid,
     GridActionsCellItem,
     GridColDef,
-    GridEventListener,
-    GridRowId,
-    GridRowModel,
     GridRowModes,
-    GridRowModesModel,
     GridToolbar,
-    GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import Image from 'next/image';
-import girl1 from '../../../../public/img/girl-1.png';
 import { Switch } from '@mui/material';
 import AddProduct from '@/components/form/AddProduct';
+import { Product } from '@/interface';
+import { useDataGridManager } from '@/hooks/useDataGridManager';
+import useProducts from '@/hooks/useProducts';
+import useCategories from '@/hooks/useCategories';
+import { Stock } from '@prisma/client';
 
-interface Row {
-    id: number;
-    name: string;
-    picture: any;
-    price: number;
-    salePrice: number;
-    quantity: number;
-    stock: number;
-    categoryName: string;
-    published: boolean;
-    version: string;
-    action: null;
+interface ProductExtends extends Product {
     isNew?: boolean;
 }
 
 const Products = () => {
+    const [openAddProduct, setOpenAddProduct] = React.useState(false);
+    const [stocks, setStocks] = React.useState<Stock[]>([]);
+    const { products } = useProducts();
+    const { categories } = useCategories();
+
+    React.useEffect(() => {
+        setRows(products);
+    }, [products]);
+
+    React.useEffect(() => {
+        const getStocks = async () => {
+            try {
+                const res = await fetch(`/api/stock`);
+                const data = await res.json();
+
+                if (res.ok) {
+                    setStocks(data);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        getStocks();
+    }, []);
+
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'Product ID', width: 130 },
-        { field: 'name', headerName: 'Product Name', width: 130 },
+        { field: 'id', headerName: 'Product ID', width: 180 },
+        { field: 'name', headerName: 'Product Name', width: 180 },
         {
             field: 'picture',
             headerName: 'Picture',
-            width: 130,
+            width: 80,
             renderCell(params) {
                 return (
-                    <Image
-                        src={params.row.picture ?? ''}
-                        alt="image"
-                        width={50}
-                        height={50}
-                        className="rounded-full object-cover"
-                    />
+                    <div className="flex items-center h-full justify-start">
+                        <Image
+                            src={params.row.picture ?? ''}
+                            alt="image"
+                            width={40}
+                            height={40}
+                            className="rounded-full shadow-xl shadow-slate-700 h-[80%] object-cover"
+                        />
+                    </div>
                 );
             },
             align: 'center',
@@ -62,6 +78,14 @@ const Products = () => {
             field: 'categoryName',
             headerName: 'Category',
             width: 130,
+            valueGetter: (params, row) => {
+                if (!row) return;
+                const category = categories.find(
+                    (cat) => cat.id === row.categoryId
+                );
+
+                return category ? category.name : 'Unknown';
+            },
         },
         {
             field: 'price',
@@ -86,9 +110,15 @@ const Products = () => {
             headerName: 'Stock',
             width: 110,
             type: 'number',
-            description: 'This column is not sortable.',
-            sortable: false,
+            // description: 'This column is not sortable.',
+            // sortable: false,
             editable: true,
+            valueGetter: (params, row) => {
+                if (!row) return;
+                const stock = stocks.find((item) => item.productId === row.id);
+
+                return stock ? stock.quantity : 0;
+            },
         },
         {
             field: 'version',
@@ -105,7 +135,6 @@ const Products = () => {
                 return (
                     <Switch
                         checked={params.row.published}
-                        onChange={handleChange}
                         inputProps={{ 'aria-label': 'controlled' }}
                         color="success"
                     />
@@ -127,13 +156,13 @@ const Products = () => {
                         <GridActionsCellItem
                             icon={<SaveIcon />}
                             label="Save"
-                            // onClick={handleSaveClick(id)}
+                            onClick={handleSaveClick(id)}
                         />,
                         <GridActionsCellItem
                             icon={<CancelIcon />}
                             label="Cancel"
                             className="textPrimary"
-                            // onClick={handleCancelClick(id)}
+                            onClick={handleCancelClick(id)}
                             color="inherit"
                         />,
                     ];
@@ -144,13 +173,13 @@ const Products = () => {
                         icon={<EditIcon />}
                         label="Edit"
                         className="textPrimary"
-                        // onClick={handleEditClick(id)}
+                        onClick={handleEditClick(id)}
                         color="inherit"
                     />,
                     <GridActionsCellItem
                         icon={<DeleteIcon />}
                         label="Delete"
-                        // onClick={handleDeleteClick(id)}
+                        onClick={handleDeleteClick(id)}
                         color="inherit"
                     />,
                 ];
@@ -158,111 +187,24 @@ const Products = () => {
         },
     ];
 
-    const dataRow: Row[] = [
-        {
-            id: 1,
-            name: 'Nguyen Hau',
-            picture: girl1,
-            categoryName: 'Fashion',
-            price: 20,
-            salePrice: 10,
-            quantity: 30,
-            stock: 20,
-            published: true,
-            version: '1.0',
-            action: null,
-        },
-        {
-            id: 2,
-            name: 'Nguyen Hau',
-            picture: girl1,
-            categoryName: 'Fashion',
-            price: 20,
-            salePrice: 10,
-            quantity: 30,
-            stock: 20,
-            published: true,
-            version: '1.0',
-            action: null,
-        },
-        {
-            id: 3,
-            name: 'Nguyen Hau',
-            picture: girl1,
-            categoryName: 'Fashion',
-            price: 20,
-            salePrice: 10,
-            quantity: 30,
-            stock: 20,
-            published: true,
-            version: '1.0',
-            action: null,
-        },
-        {
-            id: 4,
-            name: 'Nguyen Hau',
-            picture: girl1,
-            categoryName: 'Fashion',
-            price: 20,
-            salePrice: 10,
-            quantity: 30,
-            stock: 20,
-            published: true,
-            version: '1.0',
-            action: null,
-        },
-        {
-            id: 5,
-            name: 'Nguyen Hau',
-            picture: girl1,
-            categoryName: 'Fashion',
-            price: 20,
-            salePrice: 10,
-            quantity: 30,
-            stock: 20,
-            published: true,
-            version: '1.0',
-            action: null,
-        },
-        {
-            id: 6,
-            name: 'Nguyen Hau',
-            picture: girl1,
-            categoryName: 'Fashion',
-            price: 20,
-            salePrice: 10,
-            quantity: 30,
-            stock: 20,
-            published: true,
-            version: '1.0',
-            action: null,
-        },
-        {
-            id: 7,
-            name: 'Nguyen Hau',
-            picture: girl1,
-            categoryName: 'Fashion',
-            price: 20,
-            salePrice: 10,
-            quantity: 30,
-            stock: 20,
-            published: true,
-            version: '1.0',
-            action: null,
-        },
-    ];
-
-    const [rows, setRows] = React.useState<Row[]>(dataRow);
-    const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
-        {}
-    );
-
-    const [checked, setChecked] = React.useState(true);
-    const [openAddProduct, setOpenAddProduct] = React.useState(false);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setChecked(event.target.checked);
-    };
+    const {
+        rows,
+        setRows,
+        rowModesModel,
+        setRowModesModel,
+        sureDelete,
+        idToDelete,
+        handleRowEditStop,
+        handleEditClick,
+        handleSaveClick,
+        handleDeleteClick,
+        handleDeleteConfirm,
+        handleCancelClick,
+        processRowUpdate,
+        handleRowModesModelChange,
+        setSureDelete,
+        setIdToDelete,
+    } = useDataGridManager<ProductExtends>(products, '/api/product');
 
     return (
         <div className="py-5 pb-10 ">
@@ -290,6 +232,35 @@ const Products = () => {
                 )}
             </div>
 
+            {sureDelete && (
+                <div className="fixed z-30 w-[400px] top-10 left-1/2 -translate-x-1/2 bg-white shadow-lg shadow-black p-4 rounded-lg">
+                    <p className="font-semibold text-red-400 text-center">
+                        Are you sure delete category have ID: {idToDelete} ?
+                    </p>
+
+                    <div className="flex flex-row items-center gap-8 text-white mt-5">
+                        <button
+                            onClick={() => {
+                                setIdToDelete(null);
+                                setSureDelete(false);
+                            }}
+                            className="w-1/2 bg-blue-400 p-1 rounded-lg"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                handleDeleteConfirm();
+                                setSureDelete(false);
+                            }}
+                            className="w-1/2 bg-red-600 p-1 rounded-lg"
+                        >
+                            Save
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div
                 style={{ height: 450, width: '100%' }}
                 className="rounded-2xl mt-7"
@@ -300,9 +271,9 @@ const Products = () => {
                     editMode="row"
                     rowModesModel={rowModesModel}
                     checkboxSelection
-                    // onRowModesModelChange={handleRowModesModelChange}
-                    // onRowEditStop={handleRowEditStop}
-                    // processRowUpdate={processRowUpdate}
+                    onRowModesModelChange={handleRowModesModelChange}
+                    onRowEditStop={handleRowEditStop}
+                    processRowUpdate={processRowUpdate}
                     slots={{ toolbar: GridToolbar }}
                     slotProps={{
                         toolbar: { setRows, setRowModesModel },

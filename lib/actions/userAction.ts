@@ -75,3 +75,20 @@ export const getAllUser = async () => {
         return error;
     }
 };
+
+export const getUserById = async (idUser: string) => {
+    try {
+        const userFound = await prisma.user.findFirst({
+            where: {
+                id: idUser,
+            },
+        });
+
+        if (!userFound) return;
+
+        return userFound;
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
+};

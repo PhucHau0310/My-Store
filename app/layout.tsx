@@ -5,6 +5,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Suspense } from 'react';
 import Loading from './loading';
 import Providers from '@/lib/redux/Provider';
+import NextTopLoader from 'nextjs-toploader';
 
 const roboto = Roboto_Slab({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ClerkProvider>
             <html lang="en">
                 <body className={`${roboto.className} overflow-x-hidden`}>
+                    <NextTopLoader />
                     <Suspense fallback={<Loading />}>
                         <Providers>{children}</Providers>
                     </Suspense>
