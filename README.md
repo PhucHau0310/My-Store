@@ -35,6 +35,7 @@ My Store is a modern e-commerce platform built with Next.js, designed to provide
 
 
 ## Technologies Used
+![App Screenshot](ERD.png)
 
 **Frontend**:
 - React: Component-based architecture for dynamic user interfaces.
