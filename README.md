@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🛍️ My Store E-commerce Platform
 
-## Getting Started
+My Store is a modern, scalable e-commerce platform built with **Next.js**. Designed to deliver a seamless shopping experience, it integrates powerful technologies like **Prisma**, **Redux**, **Firebase**, and **MUI**, providing a feature-rich and responsive application.
 
-First, run the development server:
+---
+
+## ✨ Features
+
+### 🔐 Authentication
+
+-   Secure user login and registration powered by **Clerk**.
+
+### 🗃️ Database Management
+
+-   Utilizes **Prisma ORM** for efficient and type-safe database access.
+
+### 📊 Analytics & Charts
+
+-   Visualize sales and user data using **MUI Charts** and **X-Data-Grid**.
+
+---
+
+## 🛠️ Tech Stack
+
+### 💻 Frontend
+
+-   **React** – Component-based UI
+-   **Next.js** – SSR & SSG framework
+-   **Tailwind CSS** – Utility-first CSS
+-   **MUI** – Component library for consistent design
+
+### 🧠 Backend & Services
+
+-   **Prisma** – Type-safe ORM for DB access
+-   **Firebase** – Notifications & real-time sync
+-   **Nodemailer** – Email sending service
+
+### 📦 State Management
+
+-   **Redux Toolkit** – Centralized state management
+-   **Redux Persist** – Persist Redux state between sessions
+
+### 🧰 Development Tools
+
+-   **TypeScript** – Type safety
+-   **Vercel** – Deployment platform
+
+---
+
+## 🧭 Entity Relationship Diagram (ERD)
+
+![App Screenshot](public/reports/ERD.png)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/PhucHau0310/My-Store.git
+cd my-store
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### 3. Setup Environment Variables
 
-## Learn More
+```bash
+DATABASE_URL=your-database-url
+NEXT_PUBLIC_FIREBASE_API_KEY=your-firebase-api-key
+NEXT_PUBLIC_CLERK_FRONTEND_API=your-clerk-frontend-api
+CLERK_API_KEY=your-clerk-backend-api-key
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Setup the Database
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx prisma generate
+npx prisma migrate deploy
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## 🚀 Deployment
 
-## Deploy on Vercel
+This project is optimized for deployment on Vercel.
+Ensure that all required environment variables are properly set in your Vercel project settings.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📸 Screenshots
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 🏠 Homepage
+
+![Home Page](public/reports/homepage.png)
+
+### 🛒 Product Listing
+
+![Product List](public/reports/showproduct.png)
+
+### 📊 Admin Dashboard
+
+![Admin Dashboard](public/reports/dashboard.png)
+
+## 📬 Contact
+
+-   Name: Nguyễn Phúc Hậu
+
+-   Email: haunhpr024@gmail.com
+
+-   GitHub: PhucHau0310
